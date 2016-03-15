@@ -3,6 +3,7 @@
 -behaviour(gen_server).
 
 -compile(export_all).
+-compile(nowarn_deprecated_function).
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
@@ -26,14 +27,14 @@ init([Length]) ->
 init([Length, Name]) ->
   TableID = ets:new(my_little_cbuf, [ordered_set]),
   % We have to pre-make our slots so we don't hit $end_of_table atoms.
-  [ets:insert(TableID, [{N, now(), <<>>}]) || N <- lists:seq(0, Length)],
+  [ets:insert(TableID, [{N, timestamp(), <<>>}]) || N <- lists:seq(0, Length)],
   {ok, #state{table = TableID, length = Length,
               name = Name, pos = 0}}.
 
 handle_call({add, Data}, _From, #state{table = Tid,
                                        length = Len, pos = Pos} = State) ->
   LocalPos = Pos rem Len,
-  ets:insert(Tid, {LocalPos, now(), Data}),
+  ets:insert(Tid, {LocalPos, timestamp(), Data}),
   {reply, ok, State#state{pos = Pos + 1}};
 
 handle_call(position, _From, #state{pos = Position} = State) ->
@@ -94,6 +95,14 @@ get_back_n_entries(N, Tid, Length, LocalPos, Accum) when LocalPos =:= Length ->
 get_back_n_entries(N, Tid, Length, LocalPos, Accum) ->
   [{_Idx, _Now, Data}] = ets:slot(Tid, LocalPos),
   get_back_n_entries(N - 1, Tid, Length, LocalPos + 1, [Data|Accum]).
+
+timestamp() ->
+    try
+        erlang:timestamp()
+    catch
+	error:undef ->
+	    erlang:now()
+    end.
 
 %%%----------------------------------------------------------------------
 %%% Testing

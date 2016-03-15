@@ -1,0 +1,9 @@
+.eunit
+.rebar
+*.beam
+ebin
+doc
+*.swp
+erl_crash.dump
+.project
+log
