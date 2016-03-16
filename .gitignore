@@ -1,5 +1,4 @@
 .eunit
-.rebar
 *.beam
 ebin
 doc
@@ -7,3 +6,4 @@ doc
 erl_crash.dump
 .project
 log
+.erlang.mk
