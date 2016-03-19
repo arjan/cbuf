@@ -7,3 +7,5 @@ erl_crash.dump
 .project
 log
 .erlang.mk
+.rebar
+rebar
