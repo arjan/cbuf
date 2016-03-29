@@ -42,7 +42,6 @@ handle_call(position, _From, #state{pos = Position} = State) ->
 
 handle_call({back, N}, _From, #state{length = Len, pos = CurrentPos} = State) ->
   Diff = abs(CurrentPos - N),
-  io:format("CurrentPos, N, Len: ~p, ~p, ~p~n", [CurrentPos, N, Len]),
   if
     Diff > Len -> handle_call(all_entries, nil, State);
           true -> handle_call({entries, N}, nil, State)
@@ -64,11 +63,9 @@ handle_cast(_Request, State) ->
   {noreply, State}.
 
 terminate(_Reason, #state{table = Tid}) ->
-  io:format("Table is: ~p~n", [ets:tab2list(Tid)]),
   ok.
 
 handle_info(Info, State) ->
-  io:format("Other info of: ~p~n", [Info]),
   {noreply, State}.
 
 code_change(_OldVsn, State, _Extra) ->
